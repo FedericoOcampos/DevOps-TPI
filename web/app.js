@@ -25,7 +25,7 @@ async function setValue() {
         return;
     }
 
-    await fetch(`http://localhost:8000/set/${key}/${value}`, {
+    await fetch(`http://localhost:8010/set/${key}/${value}`, {
         method: 'POST'
     });
 
@@ -41,7 +41,7 @@ async function getValue() {
         return;
     }
 
-    const response = await fetch(`http://localhost:8000/get/${key}`);
+    const response = await fetch(`http://localhost:8010/get/${key}`);
     const data = await response.json();
     const value = data.value !== null ? data.value : "No encontrado";
 
