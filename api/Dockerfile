@@ -10,8 +10,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
 
 # Render asigna el puerto automáticamente via $PORT
-# No necesitas EXPOSE para Render, pero lo dejamos para claridad
-EXPOSE $PORT
+# Definimos un valor por defecto y exponemos el puerto de la app (8000)
+ENV PORT=8000
+EXPOSE 8000
 
-# Usar variables de entorno para el puerto
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+# Usar variables de entorno para el puerto al iniciar uvicorn
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}" ]

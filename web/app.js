@@ -1,3 +1,8 @@
+// Configuración de la API - se adaptará automáticamente al entorno
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:8000'  // Desarrollo local
+    : 'https://tu-proyecto-api.onrender.com';  // Producción en Render
+
 function openSetModal() {
     document.getElementById("setModal").style.display = "block";
 }
@@ -25,12 +30,27 @@ async function setValue() {
         return;
     }
 
-    await fetch(`http://localhost:8000/set/${key}/${value}`, {
-        method: 'POST'
-    });
+    try {
+        const response = await fetch(`${API_BASE_URL}/set/${key}/${value}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
 
-    showMessage("¡Clave guardada!");
-    closeModal("setModal");
+        if (response.ok) {
+            showMessage("¡Clave guardada!");
+            closeModal("setModal");
+            // Limpiar campos
+            document.getElementById("setKey").value = '';
+            document.getElementById("setValue").value = '';
+        } else {
+            showMessage("Error al guardar la clave");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showMessage("Error de conexión con el servidor");
+    }
 }
 
 async function getValue() {
@@ -41,16 +61,31 @@ async function getValue() {
         return;
     }
 
-    const response = await fetch(`http://localhost:8000/get/${key}`);
-    const data = await response.json();
-    const value = data.value !== null ? data.value : "No encontrado";
-
-    showMessage(`Valor para clave "${key}": ${value}`);
-    closeModal("getModal");
+    try {
+        const response = await fetch(`${API_BASE_URL}/get/${key}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            const value = data.value !== null ? data.value : "No encontrado";
+            showMessage(`Valor para clave "${key}": ${value}`);
+            closeModal("getModal");
+            // Limpiar campo
+            document.getElementById("getKey").value = '';
+        } else {
+            showMessage("Error al obtener el valor");
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showMessage("Error de conexión con el servidor");
+    }
 }
 
+// Cerrar modal al hacer click fuera
 window.onclick = function(event) {
     if (event.target.classList.contains("modal")) {
         event.target.style.display = "none";
     }
 }
+
+// Opcional: Mostrar en qué modo estamos
+console.log('API URL:', API_BASE_URL);

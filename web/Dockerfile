@@ -1,19 +1,18 @@
 FROM nginx:alpine
 
-# Copiar archivos estáticos
-COPY index.html /usr/share/nginx/html/
-COPY app.js /usr/share/nginx/html/
-COPY style.css /usr/share/nginx/html/
-
-# Copiar configuración personalizada de nginx
+# Remove default nginx content and copy app
+RUN rm -rf /usr/share/nginx/html/*
+COPY . /usr/share/nginx/html
+# Copy the repository nginx config into the container nginx location so start.sh can
+# replace the placeholder port (RENDER_PORT) with the runtime $PORT.
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copiar script de inicio
+# Copy the start script and make it executable
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-# Render asigna el puerto automáticamente
-EXPOSE $PORT
+# Expose the port (Render provides $PORT at runtime)
+EXPOSE ${PORT:-80}
 
-# Usar el script de inicio
+# Run custom start script which will replace placeholders and start nginx
 CMD ["/start.sh"]
