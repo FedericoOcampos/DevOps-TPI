@@ -1,0 +1,40 @@
+services:
+  # Servicio Redis
+  - type: redis
+    name: redis
+    ipAllowList: []
+    plan: free
+
+  # API FastAPI
+  - type: web
+    name: api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile
+    region: oregon
+    plan: free
+    #branch: main
+    buildCommand: ""
+    startCommand: ""
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: connectionString
+      - key: PORT
+        value: 8000
+    healthCheckPath: /health
+
+  # Frontend estático
+  - type: static
+    name: web
+    buildCommand: ""
+    publishPath: ./web
+    #pullRequestPreviewsEnabled: true
+    #branch: main
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
