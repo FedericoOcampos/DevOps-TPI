@@ -9,7 +9,31 @@ async function getApiBaseUrl() {
     if (isLocal) {
         return 'http://localhost:8000';
     } else {
-        return API_HOST;
+        // En producción, usar variable de entorno API_URL
+        const apiUrl = window.ENV_API_URL || window.API_URL;
+        
+        if (apiUrl) {
+            console.log(`🌐 Usando API_URL de variable de entorno: ${apiUrl}`);
+            
+            try {
+                // Verificar que la API responde
+                const response = await fetch(`${apiUrl}/health`, { 
+                    method: 'GET',
+                    timeout: 5000 
+                });
+                
+                if (response.ok) {
+                    console.log(`✅ API verificada correctamente: ${apiUrl}`);
+                    return apiUrl;
+                } else {
+                    console.warn(`⚠️ API no responde correctamente en: ${apiUrl}`);
+                }
+            } catch (error) {
+                console.error(`❌ Error verificando API en ${apiUrl}:`, error.message);
+            }
+        } else {
+            console.warn('⚠️ Variable API_URL no está definida');
+        }
     }
 
 }
