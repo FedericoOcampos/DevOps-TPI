@@ -10,7 +10,6 @@ services:
     name: api
     runtime: docker
     dockerfilePath: ./api/Dockerfile
-    dockerContext: ./api
     region: oregon
     plan: free
     #branch: main
