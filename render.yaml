@@ -4,7 +4,7 @@ services:
     name: redis
     ipAllowList: []
     plan: free
-    autoDeployTrigger: false
+    autoDeployTrigger: off
 
   # API FastAPI
   - type: web
