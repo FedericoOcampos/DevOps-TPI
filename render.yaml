@@ -32,6 +32,3 @@ services:
     runtime: static
     buildCommand: ""
     staticPublishPath: ./web
-    envVars:
-      - key: API_BASE
-        value: https://api-c5mn.onrender.com  # Cambiar por la URL real de la API desplegada
