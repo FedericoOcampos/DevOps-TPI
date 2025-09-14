@@ -32,3 +32,6 @@ services:
     runtime: static
     buildCommand: ""
     staticPublishPath: ./web
+    envVars:
+      - key: API_BASE
+        value: http://api:8000  # Cambiar por la URL real de la API desplegada
