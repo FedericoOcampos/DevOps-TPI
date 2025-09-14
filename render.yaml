@@ -7,7 +7,7 @@ services:
 
   # API FastAPI
   - type: web
-    name: api
+    name: api2
     runtime: docker
     dockerContext: ./api
     region: oregon
