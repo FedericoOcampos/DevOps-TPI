@@ -36,8 +36,6 @@ services:
     buildCommand: ""
     staticPublishPath: ./web
     autoDeployTrigger: off
-    buildCommand: |
-      sed -i "s|%%API_URL%%|$API_URL|g" ./config.js
     envVars:
       - key: API_URL
         value: https://api-c5mn.onrender.com
