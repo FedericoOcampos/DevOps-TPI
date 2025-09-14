@@ -1,0 +1,143 @@
+# .github/workflows/deploy.yml
+name: 🚀 Deploy to Render
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Servicio a desplegar'
+        required: true
+        default: 'detectar-cambios'
+        type: choice
+        options:
+        - detectar-cambios
+        - api
+        - web
+        - todos
+
+jobs:
+  # 🔍 Detectar cambios automáticamente
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api-changed: ${{ steps.changes.outputs.api }}
+      web-changed: ${{ steps.changes.outputs.web }}
+      infra-changed: ${{ steps.changes.outputs.infra }}
+      force-api: ${{ steps.manual.outputs.force-api }}
+      force-web: ${{ steps.manual.outputs.force-web }}
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          
+      - name: 🔎 Detectar cambios en archivos
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            api:
+              - 'api/**'
+            web:
+              - 'web/**'
+            infra:
+              - 'render.yaml'
+              - 'docker-compose.yml'
+              - '.github/workflows/**'
+
+      - name: 🎯 Verificar deploy manual
+        id: manual
+        run: |
+          if [[ "${{ github.event.inputs.service }}" == "api" ]] || [[ "${{ github.event.inputs.service }}" == "todos" ]]; then
+            echo "force-api=true" >> $GITHUB_OUTPUT
+          else
+            echo "force-api=false" >> $GITHUB_OUTPUT
+          fi
+          
+          if [[ "${{ github.event.inputs.service }}" == "web" ]] || [[ "${{ github.event.inputs.service }}" == "todos" ]]; then
+            echo "force-web=true" >> $GITHUB_OUTPUT
+          else
+            echo "force-web=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📋 Mostrar cambios detectados
+        run: |
+          echo "🔍 Cambios detectados:"
+          echo "  • API: ${{ steps.changes.outputs.api }}"
+          echo "  • Web: ${{ steps.changes.outputs.web }}"
+          echo "  • Infraestructura: ${{ steps.changes.outputs.infra }}"
+          echo "🎯 Deploy forzado:"
+          echo "  • Force API: ${{ steps.manual.outputs.force-api }}"
+          echo "  • Force Web: ${{ steps.manual.outputs.force-web }}"
+
+  # 🚀 Deploy API
+  deploy-api:
+    needs: detect-changes
+    if: |
+      needs.detect-changes.outputs.api-changed == 'true' || 
+      needs.detect-changes.outputs.infra-changed == 'true' ||
+      needs.detect-changes.outputs.force-api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Deploying API to Render
+        run: |
+          echo "🔄 Iniciando deploy de API..."
+          echo "Service ID: ${{ secrets.RENDER_API_SERVICE_ID }}"
+          
+      - name: 📡 Trigger API Deploy
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://api.render.com/v1/services/${{ secrets.RENDER_API_SERVICE_ID }}/deploys'
+          method: 'POST'
+          customHeaders: '{"Authorization": "Bearer ${{ secrets.RENDER_API_KEY }}", "Content-Type": "application/json"}'
+          data: '{"clearCache": true}'
+          
+      - name: ✅ API Deploy Status
+        run: echo "✅ API deployment triggered successfully!"
+
+  # 🌐 Deploy Web
+  deploy-web:
+    needs: detect-changes
+    if: |
+      needs.detect-changes.outputs.web-changed == 'true' || 
+      needs.detect-changes.outputs.force-web == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 Deploying Web to Render
+        run: |
+          echo "🔄 Iniciando deploy de Web..."
+          echo "Service ID: ${{ secrets.RENDER_WEB_SERVICE_ID }}"
+          
+      - name: 📡 Trigger Web Deploy
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://api.render.com/v1/services/${{ secrets.RENDER_WEB_SERVICE_ID }}/deploys'
+          method: 'POST'
+          customHeaders: '{"Authorization": "Bearer ${{ secrets.RENDER_API_KEY }}", "Content-Type": "application/json"}'
+          data: '{"clearCache": true}'
+          
+      - name: ✅ Web Deploy Status
+        run: echo "✅ Web deployment triggered successfully!"
+
+  # 📊 Notificación final
+  notify:
+    needs: [detect-changes, deploy-api, deploy-web]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📊 Deployment Summary
+        run: |
+          echo "🎯 Resumen del Deploy:"
+          echo "======================================"
+          echo "📁 Cambios detectados:"
+          echo "  • API: ${{ needs.detect-changes.outputs.api-changed }}"
+          echo "  • Web: ${{ needs.detect-changes.outputs.web-changed }}"
+          echo "  • Infraestructura: ${{ needs.detect-changes.outputs.infra-changed }}"
+          echo ""
+          echo "🚀 Servicios desplegados:"
+          echo "  • API: ${{ needs.deploy-api.result != 'skipped' }}"
+          echo "  • Web: ${{ needs.deploy-web.result != 'skipped' }}"
+          echo ""
+          echo "✅ Deploy completado!"
