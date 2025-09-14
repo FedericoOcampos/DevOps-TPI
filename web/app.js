@@ -2,34 +2,16 @@
 
 // Configuración automática de la API
 async function getApiBaseUrl() {
-    const API_HOST = process.env.API_BASE;
+    // const API_HOST = process.env.API_BASE;
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
     
     if (isLocal) {
         return 'http://localhost:8000';
     } else {
-        // En producción, primero intentamos obtener la URL del config de la API
-        try {
-            // Asumimos que la API está en el mismo dominio base pero con prefijo 'api-'
-            // const apiHost = hostname.replace('web-', 'api-');
-            //const apiUrl = `https://${apiHost}`;
-
-            const apiUrl = "https://api-c5mn.onrender.com";
-            
-            // Verificamos si la API responde
-            //const response = await fetch(`${apiUrl}/health`);
-            //if (response.ok) {
-            //    return apiUrl;
-            //}
-        } catch (error) {
-            console.warn('No se pudo detectar la API automáticamente:', error);
-        }
-        
-        // Fallback: usar variable de entorno si está disponible
-        // (Render puede inyectar esto en build time)
-        return window.ENV_API_URL || 'https://api-defaultname.onrender.com';
+        return "https://api-c5mn.onrender.com";
     }
+
 }
 
 let API_BASE_URL;
