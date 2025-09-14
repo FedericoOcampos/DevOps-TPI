@@ -2,14 +2,14 @@
 
 // Configuración automática de la API
 async function getApiBaseUrl() {
-    // const API_HOST = process.env.API_BASE;
+    const API_HOST = process.env.API_URL;
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
     
     if (isLocal) {
         return 'http://localhost:8000';
     } else {
-        return "https://api-c5mn.onrender.com";
+        return API_HOST;
     }
 
 }
