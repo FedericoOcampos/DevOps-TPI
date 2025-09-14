@@ -9,7 +9,7 @@ services:
   - type: web
     name: api
     runtime: docker
-    dockerfilePath: ./api
+    dockerfilePath: ./api/Dockerfile
     region: oregon
     plan: free
     #branch: main
