@@ -2,7 +2,6 @@
 
 // Configuración automática de la API
 async function getApiBaseUrl() {
-    const API_HOST = process.env.API_URL;
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
     
