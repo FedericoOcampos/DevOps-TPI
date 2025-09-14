@@ -42,16 +42,16 @@ class Settings:
         else:
             # En producción, Render puede pasar la URL del frontend como variable
             frontend_url = os.getenv('FRONTEND_URL', '')
-            origins = []
+            origins = ["https://web-py62.onrender.com"]
             
             if frontend_url:
                 origins.append(frontend_url)
             
             # También permitir el dominio base de tu proyecto
-            origins.extend([
-                "https://web-py62.onrender.com/",  # Patrón para servicios de Render
+            #origins.extend([
+             #   "https://web-py62.onrender.com",  # Patrón para servicios de Render
                 # Agrega aquí dominios específicos si los conoces
-            ])
+            #])
             
             return origins
     
