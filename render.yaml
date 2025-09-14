@@ -9,13 +9,12 @@ services:
   - type: web
     name: api
     runtime: docker
-    dockerContext: ./api
-    dockerfilePath: ./Dockerfile
+    rootDirectory: ./api
     region: oregon
     plan: free
     #branch: main
-    buildCommand: ""
-    startCommand: ""
+    #buildCommand: ""
+    #startCommand: ""
     envVars:
       - key: ENVIRONMENT
         value: production
@@ -26,7 +25,7 @@ services:
           property: connectionString
       - key: PORT
         value: 8000
-    healthCheckPath: /health
+    #healthCheckPath: /health
 
  # Frontend como web service con nginx
   - type: web
