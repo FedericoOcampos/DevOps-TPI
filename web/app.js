@@ -9,7 +9,7 @@ async function getApiBaseUrl() {
         return 'http://localhost:8000';
     } else {
         // En producción, usar variable de entorno API_URL
-        const apiUrl = window.ENV_API_URL || window.API_URL;
+        const apiUrl = window.ENV.API_URL;
         
         if (apiUrl) {
             console.log(`🌐 Usando API_URL de variable de entorno: ${apiUrl}`);
