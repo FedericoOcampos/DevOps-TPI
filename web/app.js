@@ -15,13 +15,13 @@ async function getApiBaseUrl() {
             // const apiHost = hostname.replace('web-', 'api-');
             //const apiUrl = `https://${apiHost}`;
 
-            const apiUrl = API_HOST;
+            const apiUrl = "https://api-c5mn.onrender.com";
             
             // Verificamos si la API responde
-            const response = await fetch(`${apiUrl}/health`);
-            if (response.ok) {
-                return apiUrl;
-            }
+            //const response = await fetch(`${apiUrl}/health`);
+            //if (response.ok) {
+            //    return apiUrl;
+            //}
         } catch (error) {
             console.warn('No se pudo detectar la API automáticamente:', error);
         }
