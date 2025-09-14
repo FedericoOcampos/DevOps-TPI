@@ -2,6 +2,7 @@
 
 // Configuración automática de la API
 async function getApiBaseUrl() {
+    const API_HOST = process.env.API_BASE;
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
     
@@ -11,8 +12,10 @@ async function getApiBaseUrl() {
         // En producción, primero intentamos obtener la URL del config de la API
         try {
             // Asumimos que la API está en el mismo dominio base pero con prefijo 'api-'
-            const apiHost = hostname.replace('web-', 'api-');
-            const apiUrl = `https://${apiHost}`;
+            // const apiHost = hostname.replace('web-', 'api-');
+            //const apiUrl = `https://${apiHost}`;
+
+            const apiUrl = API_HOST;
             
             // Verificamos si la API responde
             const response = await fetch(`${apiUrl}/health`);
