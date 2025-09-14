@@ -4,7 +4,7 @@ services:
     name: redis
     ipAllowList: []
     plan: free
-    autoDeploy: false
+    autoDeployTrigger: false
 
   # API FastAPI
   - type: web
@@ -28,7 +28,7 @@ services:
       - key: FRONTEND_URL
         value: https://web-py62.onrender.com
     #healthCheckPath: /health
-    autoDeploy: false
+    autoDeployTrigger: false
 
  # Frontend como web service con nginx
   - type: web
@@ -36,7 +36,7 @@ services:
     runtime: static
     buildCommand: ""
     staticPublishPath: ./web
-    autoDeploy: false
+    autoDeployTrigger: false
     envVars:
       - key: API_URL
         value: https://api-c5mn.onrender.com
